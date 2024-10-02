@@ -1,0 +1,62 @@
+@baseUrl = http://localhost:8087
+
+### GET all users
+GET {{baseUrl}}/users
+Accept: application/json
+
+
+### GET user by ID
+GET {{baseUrl}}/users/
+Accept: application/json
+
+### SIGN UP
+POST {{baseUrl}}/auth/signup
+Content-Type: application/json
+
+{
+  "username": "matheustorresdev97",
+  "email": "matheus@email.com",
+  "password": "password123",
+  "fullName": "Matheus Torres",
+  "phoneNumber": "7999876543",
+  "cpf": "12345678912",
+  "imageUrl": "teste"
+}
+
+### DELETE user by ID
+DELETE {{baseUrl}}/users/
+Accept: application/json
+
+### PUT update user by ID
+PUT {{baseUrl}}/users/{{userId}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "newUsername",
+  "phoneNumber": "123456789",
+  "cpf": "12345678900"
+}
+
+###
+
+### PUT update password
+PUT {{baseUrl}}/users/{{userId}}/password
+Content-Type: application/json
+Accept: application/json
+
+{
+  "oldPassword": "oldPassword123",
+  "newPassword": "newPassword123"
+}
+
+###
+
+### PUT update user image
+PUT {{baseUrl}}/users/e92c72c6-7369-4566-b1dd-84d7bb67d80b/image
+Content-Type: application/json
+Accept: application/json
+
+{
+  "imageUrl": "http://newimageurl.com/profile.jpg"
+}
