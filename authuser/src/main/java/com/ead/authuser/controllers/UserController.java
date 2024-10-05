@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable; 
+import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -20,9 +20,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import com.ead.authuser.dtos.UserDto;
 import com.ead.authuser.models.User;
 import com.ead.authuser.services.UserService;
+import com.ead.authuser.specifications.SpecificationTemplate;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import java.time.LocalDateTime;
@@ -37,9 +41,14 @@ public class UserController {
     UserService userService;
 
     @GetMapping
-    public ResponseEntity<Page<User>> getAllUsers(
+    public ResponseEntity<Page<User>> getAllUsers(SpecificationTemplate.UserSpec spec,
             @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable) {
-        Page<User> userPage = userService.findAll(pageable);
+        Page<User> userPage = userService.findAll(spec, pageable);
+        if (!userPage.isEmpty()) {
+            for (User user : userPage.toList()) {
+                user.add(linkTo(methodOn(UserController.class).getUserById(user.getUserId())).withSelfRel());
+            }
+        }
         return ResponseEntity.status(HttpStatus.OK).body(userPage);
     }
 

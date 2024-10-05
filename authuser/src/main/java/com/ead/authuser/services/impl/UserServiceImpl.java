@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.data.domain.Pageable; // Correct import
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,8 +15,8 @@ import com.ead.authuser.repositories.UserRepository;
 import com.ead.authuser.services.UserService;
 
 @Service
-public class UserServiceImpl implements UserService{
-    
+public class UserServiceImpl implements UserService {
+
     @Autowired
     UserRepository userRepository;
 
@@ -50,7 +51,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public Page<User> findAll(Pageable pageable) {
-        return userRepository.findAll(pageable); // Use the pagination method here
+    public Page<User> findAll(Specification<User> spec, Pageable pageable) {
+        return userRepository.findAll(spec, pageable); 
     }
 }
