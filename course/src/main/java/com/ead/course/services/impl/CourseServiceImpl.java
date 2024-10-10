@@ -15,6 +15,8 @@ import com.ead.course.services.CourseService;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class CourseServiceImpl implements CourseService {
@@ -34,7 +36,7 @@ public class CourseServiceImpl implements CourseService {
         List<Module> moduleList = moduleRepository.findAllModulesIntoCourse(course.getCourseId());
         if (!moduleList.isEmpty()) {
             for (Module module : moduleList) {
-                List<Lesson> lessonList = lessonRepository.findAllLessonIntoModule(module.getModuleId());
+                List<Lesson> lessonList = lessonRepository.findAllLessonsIntoModule(module.getModuleId());
                 if (!lessonList.isEmpty()) {
                     lessonRepository.deleteAll(lessonList);
                 }
@@ -42,5 +44,20 @@ public class CourseServiceImpl implements CourseService {
             moduleRepository.deleteAll(moduleList);
         }
         courseRepository.delete(course);
+    }
+
+    @Override
+    public Course save(Course course) {
+        return courseRepository.save(course);
+    }
+
+    @Override
+    public Optional<Course> findById(UUID courseId) {
+        return courseRepository.findById(courseId);
+    }
+
+    @Override
+    public List<Course> findAll() {
+        return courseRepository.findAll();
     }
 }
