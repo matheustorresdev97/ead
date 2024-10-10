@@ -1,7 +1,10 @@
 package com.ead.course.services.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.ead.course.models.Module;
 import com.ead.course.models.Course;
@@ -57,7 +60,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<Course> findAll() {
-        return courseRepository.findAll();
+    public Page<Course> findAll(Specification<Course> spec, Pageable pageable) {
+        return courseRepository.findAll(spec, pageable);
     }
 }
