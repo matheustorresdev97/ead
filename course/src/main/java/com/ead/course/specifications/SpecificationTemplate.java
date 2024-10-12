@@ -3,6 +3,7 @@ package com.ead.course.specifications;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.ead.course.models.Course;
+import com.ead.course.models.CourseUser;
 import com.ead.course.models.Lesson;
 import com.ead.course.models.Module;
 
@@ -12,6 +13,7 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -22,11 +24,17 @@ public class SpecificationTemplate {
             @Spec(path = "courseStatus", spec = Equal.class),
             @Spec(path = "name", spec = Like.class)
     })
-    public interface CourseSpec extends Specification<Course> {}
+    public interface CourseSpec extends Specification<Course> {
+    }
+
     @Spec(path = "title", spec = Like.class)
-    public interface ModuleSpec extends Specification<Module> {}
+    public interface ModuleSpec extends Specification<Module> {
+    }
+
     @Spec(path = "title", spec = Like.class)
-    public interface LessonSpec extends Specification<Lesson> {}
+    public interface LessonSpec extends Specification<Lesson> {
+    }
+
     @SuppressWarnings("null")
     public static Specification<Module> moduleCourseId(final UUID courseId) {
         return (root, query, cb) -> {
@@ -37,6 +45,7 @@ public class SpecificationTemplate {
             return cb.and(cb.equal(course.get("courseId"), courseId), cb.isMember(module, coursesModules));
         };
     }
+
     @SuppressWarnings("null")
     public static Specification<Lesson> lessonModuleId(final UUID moduleId) {
         return (root, query, cb) -> {
@@ -45,6 +54,15 @@ public class SpecificationTemplate {
             Root<Module> module = query.from(Module.class);
             Expression<Collection<Lesson>> moduleLessons = module.get("lessons");
             return cb.and(cb.equal(module.get("moduleId"), moduleId), cb.isMember(lesson, moduleLessons));
+        };
+    }
+
+    @SuppressWarnings("null")
+    public static Specification<Course> courseUserId(final UUID userId) {
+        return (root, query, cb) -> {
+            query.distinct(true);
+            Join<Course, CourseUser> courseProd = root.join("coursesUsers");
+            return cb.equal(courseProd.get("courseId"), userId);
         };
     }
 }

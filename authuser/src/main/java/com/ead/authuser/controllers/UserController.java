@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -45,8 +46,14 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<Page<User>> getAllUsers(SpecificationTemplate.UserSpec spec,
-            @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable) {
-        Page<User> userPage = userService.findAll(spec, pageable);
+            @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable,
+            @RequestParam(required = false) UUID courseId) {
+        Page<User> userPage = null;
+        if (courseId != null) {
+            userPage = userService.findAll(SpecificationTemplate.userCourseId(courseId).and(spec), pageable);
+        } else {
+            userPage = userService.findAll(spec, pageable);
+        }
         if (!userPage.isEmpty()) {
             for (User user : userPage.toList()) {
                 user.add(linkTo(methodOn(UserController.class).getUserById(user.getUserId())).withSelfRel());
@@ -93,7 +100,7 @@ public class UserController {
             user.setCpf(userDto.getCpf());
             user.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
             userService.save(user);
-            log.debug("PUT updateUser userModel saved {} ", user.toString());
+            log.debug("PUT updateUser userModel userId {} ", user.getUserId());
             log.info("User updated successfully userId {} ", user.getUserId());
             return ResponseEntity.status(HttpStatus.OK).body(user);
         }
@@ -116,7 +123,7 @@ public class UserController {
             user.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
             userService.save(user);
             log.debug("PUT updatePassword userModel saved {} ", user.toString());
-            log.info("Password updated successfully userId {} ", user.getUserId());
+            log.debug("PUT updatePassword userId saved {} ", user.getUserId());
             return ResponseEntity.status(HttpStatus.OK).body("Password updated successfully");
         }
     }
@@ -132,6 +139,7 @@ public class UserController {
             user.setImageUrl(userDto.getImageUrl());
             user.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
             userService.save(user);
+            log.debug("PUT updateImage userId saved {} ", user.getUserId());
             return ResponseEntity.status(HttpStatus.OK).body(user);
         }
     }
