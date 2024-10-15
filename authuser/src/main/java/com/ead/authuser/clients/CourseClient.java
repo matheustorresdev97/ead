@@ -1,6 +1,7 @@
 package com.ead.authuser.clients;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -22,7 +23,7 @@ import java.util.UUID;
 
 @Log4j2
 @Component
-public class UserClient {
+public class CourseClient {
 
     @Autowired
     RestTemplate restTemplate;
@@ -30,9 +31,12 @@ public class UserClient {
     @Autowired
     UtilsService utilsService;
 
+    @Value("${ead.api.urL.course}")
+    String REQUEST_URL;
+
     public Page<CourseDto> getAllCoursesByUser(UUID userId, Pageable pageable) {
         List<CourseDto> searchResult = null;
-        String url = utilsService.createUrl(userId, pageable);
+        String url = REQUEST_URL + utilsService.createUrlGetAllCoursesByUser(userId, pageable);
         log.debug("Request URL: {} ", url);
         log.info("Request URL: {} ", url);
         try {

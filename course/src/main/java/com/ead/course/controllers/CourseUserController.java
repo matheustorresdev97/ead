@@ -75,7 +75,7 @@ public class CourseUserController {
             }
         }
         CourseUser courseUser = courseUserService
-                .save(courseOptional.get().convertToCourseUser(subscriptionDto.getUserId()));
+                .saveAndSendSubscriptionUserInCourse(courseOptional.get().convertToCourseUser(subscriptionDto.getUserId()));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(courseUser);
     }

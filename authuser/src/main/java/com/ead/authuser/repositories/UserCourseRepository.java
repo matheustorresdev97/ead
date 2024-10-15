@@ -8,4 +8,5 @@ import com.ead.authuser.models.UserCourse;
 
 public interface UserCourseRepository extends JpaRepository<UserCourse, UUID>{
     
+    boolean existsByUserIdAndCourseId(UUID userId, UUID courseId);
 }
